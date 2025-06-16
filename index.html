@@ -19,41 +19,36 @@
   <!-- permite trocar a data sem editar código -->
   <input type="datetime-local" id="picker" />
 
-  <script>
-    const $cd   = document.getElementById('countdown');
-    const $pick = document.getElementById('picker');
+<script>
+  const $cd   = document.getElementById('countdown');
+  const $pick = document.getElementById('picker');
 
-    // ► Defina aqui a data/horário-alvo padrão (UTC)
-    let target = new Date('2025-12-31T23:59:59Z');
+  let target = new Date('2025-07-11T02:55:00-03:00');   // ajuste aqui se quiser
 
-    // se vier ?t=YYYY-MM-DDTHH:mm:ssZ na URL, usa como alvo
-    const urlParam = new URLSearchParams(location.search).get('t');
-    if (urlParam) target = new Date(urlParam);
-
-    // mostra no input
-    $pick.value = target.toISOString().slice(0,16);
-    $pick.addEventListener('change', e => {
+  $pick.value = target.toISOString().slice(0,16);
+  $pick.addEventListener('change', e=>{
       target = new Date(e.target.value);
-      update();        // força atualizar imediatamente
-    });
+      update();
+  });
 
-    function pad(n){ return String(n).padStart(2,'0'); }
+  function pad(n){ return String(n).padStart(2,'0'); }
 
-    function update(){
-      const now   = new Date();
-      const diff  = target - now;            // ms restantes
-      if (diff <= 0){
-        $cd.textContent = '00:00:00';
-        return;                               // para de contar
-      }
-      const h = Math.floor(diff/3600000);
-      const m = Math.floor(diff/60000) % 60;
-      const s = Math.floor(diff/1000)  % 60;
-      $cd.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-    }
-    update();                 // 1ª execução imediata
-    setInterval(update,1000); // depois a cada segundo
-  </script>
+  function update(){
+    const diff = target - new Date();        // ms
+    if (diff<=0){ $cd.textContent='00:00:00:00'; return; }
+
+    const totalSec = Math.floor(diff/1000);
+    const s  = totalSec % 60;
+    const m  = Math.floor(totalSec/60) % 60;
+    const h  = Math.floor(totalSec/3600) % 24;
+    const d  = Math.floor(totalSec/86400);   // dias inteiros
+
+$cd.textContent = `${d} dias ${pad(h)} h ${pad(m)} min ${pad(s)} s`;
+  }
+  update();
+  setInterval(update,1000);
+</script>
+
 
 </body>
 </html>
