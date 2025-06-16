@@ -34,6 +34,18 @@
       border:none;
       border-radius:4px;
     }
+    input, button {
+      margin-top: 1.4rem;
+      padding: .4rem .6rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4285F4;
+      color: white;
+    }
   </style>
 </head>
 
@@ -41,10 +53,12 @@
   <h1>Dias até a viagem do Arthur até a Isabella</h1>
   <div id="countdown">--:- h -- min -- s</div>
   <input type="datetime-local" id="picker" />
+  <button id="btnAgenda">Adicionar ao Google Agenda</button>
 
   <script>
     const $cd   = document.getElementById('countdown');
     const $pick = document.getElementById('picker');
+    const $btn  = document.getElementById('btnAgenda');
 
     /* data-alvo fixa — 11/07/2025 02:55 no fuso -03:00                      */
     let target = new Date('2025-07-11T02:55:00-03:00');
@@ -85,9 +99,33 @@
       $cd.textContent = `${d} dias ${pad(h)} h ${pad(m)} min ${pad(s)} s`;
     }
 
+    function formatToGoogleCalendarDate(date) {
+      const y = date.getUTCFullYear();
+      const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(date.getUTCDate()).padStart(2, '0');
+      const hh = String(date.getUTCHours()).padStart(2, '0');
+      const mm = String(date.getUTCMinutes()).padStart(2, '0');
+      return `${y}${m}${d}T${hh}${mm}00Z`;
+    }
+
+    $btn.addEventListener('click', () => {
+      const startDate = new Date(target);
+      const endDate = new Date(startDate.getTime() + 120 * 60 * 1000); // 1h de duração
+
+      const start = formatToGoogleCalendarDate(startDate);
+      const end = formatToGoogleCalendarDate(endDate);
+
+      const title = encodeURIComponent('💕💑💕 Viagem do Arthur até a Isabella 💕💑💕');
+      const details = encodeURIComponent('✨🚗✨ Hora de viajar! ✨🚗✨');
+      const location = encodeURIComponent('São Paulo');
+
+      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&sf=true&output=xml`;
+
+      window.open(url, '_blank');
+    });
+
     update();               // primeira execução imediata
     setInterval(update,1000); // depois a cada segundo
   </script>
 </body>
 </html>
-
