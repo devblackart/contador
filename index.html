@@ -4,56 +4,64 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Contador Regressivo</title>
+
+  <!-- estilos básicos -->
   <style>
-  <body>
-  <h1 style="margin:0 0 .5rem">
-  Dias até a viagem do Bleble até a Bebela
-</h1
+    body{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0;
+      font-family:sans-serif;
+      background:#1e1e26;
+      color:#f8f8f2;
+    }
+    h1{margin:0 0 .5rem;font-weight:400;font-size:1.3rem;text-align:center}
+    #countdown{font-size:2.8rem;letter-spacing:2px}
+    input{margin-top:1.4rem;padding:.4rem .6rem;font-size:1rem;border:none;border-radius:4px}
+  </style>
+</head>
 
-  <!-- contador -->
+<body>
+  <h1>Dias até a viagem do Bleble até a Bebela</h1>
   <div id="countdown">--:--:--:--</div>
-
-  <!-- opcional: retire ou mantenha o input para mudar a data -->
-  <input type="datetime-local" id="picker" />
-</body>
-
-
-  <h1>Faltam</h1>
-  <div id="countdown">--:--:--</div>
-
-  <!-- permite trocar a data sem editar código -->
   <input type="datetime-local" id="picker" />
 
-<script>
-  const $cd   = document.getElementById('countdown');
-  const $pick = document.getElementById('picker');
+  <script>
+    const $cd   = document.getElementById('countdown');
+    const $pick = document.getElementById('picker');
 
-  let target = new Date('2025-07-11T02:55:00-03:00');   // ajuste aqui se quiser
+    // data-alvo padrão (11/07/2025 02:55 UTC-3)
+    let target = new Date('2025-07-11T02:55:00-03:00');
 
-  $pick.value = target.toISOString().slice(0,16);
-  $pick.addEventListener('change', e=>{
+    // mostra a data no input
+    $pick.value = target.toISOString().slice(0,16);
+    $pick.addEventListener('change', e => {
       target = new Date(e.target.value);
       update();
-  });
+    });
 
-  function pad(n){ return String(n).padStart(2,'0'); }
+    const pad = n => String(n).padStart(2,'0');
 
-  function update(){
-    const diff = target - new Date();        // ms
-    if (diff<=0){ $cd.textContent='00:00:00:00'; return; }
+    function update(){
+      const diff = target - new Date();
+      if (diff <= 0){
+        $cd.textContent = '00 dias 00 h 00 min 00 s';
+        return;
+      }
+      const totalSec = Math.floor(diff/1000);
+      const s = totalSec % 60;
+      const m = Math.floor(totalSec/60) % 60;
+      const h = Math.floor(totalSec/3600) % 24;
+      const d = Math.floor(totalSec/86400);
 
-    const totalSec = Math.floor(diff/1000);
-    const s  = totalSec % 60;
-    const m  = Math.floor(totalSec/60) % 60;
-    const h  = Math.floor(totalSec/3600) % 24;
-    const d  = Math.floor(totalSec/86400);   // dias inteiros
+      $cd.textContent = `${d} dias ${pad(h)} h ${pad(m)} min ${pad(s)} s`;
+    }
 
-$cd.textContent = `${d} dias ${pad(h)} h ${pad(m)} min ${pad(s)} s`;
-  }
-  update();
-  setInterval(update,1000);
-</script>
-
-
+    update();               // primeira execução
+    setInterval(update,1000); // depois a cada segundo
+  </script>
 </body>
 </html>
